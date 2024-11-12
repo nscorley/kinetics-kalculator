@@ -1,0 +1,22 @@
+{
+    "21062324": {
+        "4MU": {
+            "slope": 33.707,
+            "y_intercept": 249.5
+        },
+        "mscarlett": {
+            "slope": 1020.8,
+            "y_intercept": 6.83
+        }
+    },
+    "23062123": {
+        "4MU": {
+            "slope": 26.006,
+            "y_intercept": 206
+        },
+        "mscarlett": {
+            "slope": 857.1,
+            "y_intercept": 4.83
+        }
+    }
+}
