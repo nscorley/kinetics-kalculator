@@ -1,0 +1,359 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kinetics_kalculator.utils &mdash; Kinetic Kalculator 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Kinetic Kalculator
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">kinetics_kalculator</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Kinetic Kalculator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">kinetics_kalculator.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for kinetics_kalculator.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">linregress</span>
+
+
+<div class="viewcode-block" id="convert_to_concentration_using_linear_standard_curve">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.utils.convert_to_concentration_using_linear_standard_curve">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_to_concentration_using_linear_standard_curve</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">slope</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y_intercept</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts generic values to concentrations.</span>
+
+<span class="sd">    Convert the &#39;value&#39; column in the DataFrame to concentration units using the provided slope and y-intercept</span>
+<span class="sd">    of the standard curve.</span>
+
+<span class="sd">    NOTE: Only support linear standard curves of the form y = mx + c.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (pd.DataFrame): A DataFrame containing a &#39;value&#39; column.</span>
+<span class="sd">        slope (float): The slope of the standard curve.</span>
+<span class="sd">        y_intercept (float): The y-intercept of the standard curve.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: The DataFrame with the &#39;value&#39; column converted to concentration units.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the DataFrame does not contain the required &#39;value&#39; column.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; df = pd.DataFrame({&quot;value&quot;: [1, 2, 3, 4, 5]})  # E.g., units of absorbance</span>
+<span class="sd">        &gt;&gt;&gt; convert_to_concentration_using_standard_curves(df, 2, 1)</span>
+<span class="sd">        &gt;&gt;&gt; df</span>
+<span class="sd">           value</span>
+<span class="sd">        0    0.5</span>
+<span class="sd">        1    1.0</span>
+<span class="sd">        2    1.5</span>
+<span class="sd">        3    2.0</span>
+<span class="sd">        4    2.5</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure the DataFrame contains the required &#39;value&#39; column</span>
+    <span class="k">if</span> <span class="s2">&quot;value&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;DataFrame must contain a &#39;value&#39; column.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Apply the conversion using the standard curve parameters</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">y_intercept</span><span class="p">)</span> <span class="o">/</span> <span class="n">slope</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="filter_by_time_range">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.utils.filter_by_time_range">[docs]</a>
+<span class="k">def</span> <span class="nf">filter_by_time_range</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">lower_bound</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Filter the DataFrame to only include rows where the &#39;time&#39; column is within the specified range.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (pd.DataFrame): A DataFrame containing a &#39;time&#39; column.</span>
+<span class="sd">        lower_bound (float): The lower bound of the time range.</span>
+<span class="sd">        upper_bound (float): The upper bound of the time range.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: A new DataFrame containing only the rows within the specified time range.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the DataFrame does not contain the required &#39;time&#39; column.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure the DataFrame contains the required &#39;time&#39; column</span>
+    <span class="k">if</span> <span class="s2">&quot;time&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;DataFrame must contain a &#39;time&#39; column.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Apply the filter to include only rows within the specified time range</span>
+    <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">upper_bound</span><span class="p">)]</span>
+
+    <span class="c1"># Assert that the filtered DataFrame is not empty</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">filtered_df</span><span class="o">.</span><span class="n">empty</span><span class="p">,</span> <span class="s2">&quot;No data within the specified time range!&quot;</span>
+
+    <span class="c1"># Assert that the filtered dataframes has no time values outside the specified range</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">filtered_df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+    <span class="p">),</span> <span class="s2">&quot;Time values outside the specified range.&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">filtered_df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lt</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+    <span class="p">),</span> <span class="s2">&quot;Time values outside the specified range.&quot;</span>
+
+    <span class="k">return</span> <span class="n">filtered_df</span></div>
+
+
+
+<div class="viewcode-block" id="adjust_rates_for_background">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.utils.adjust_rates_for_background">[docs]</a>
+<span class="k">def</span> <span class="nf">adjust_rates_for_background</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">negative_control</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">rate_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rate&quot;</span><span class="p">,</span>
+    <span class="n">sample_type_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sample_type&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjusts the rates in the DataFrame to account for background rates using a specified negative control.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (pd.DataFrame): A DataFrame containing a sample type column and a column for rates.</span>
+<span class="sd">        negative_control (str): The value in the sample type column to identify negative control samples.</span>
+<span class="sd">        epsilon (float): A small positive value to replace any negative rates after background adjustment.</span>
+<span class="sd">        rate_column (str): The name of the column containing the rates to be adjusted. Default is &#39;rate&#39;.</span>
+<span class="sd">        sample_type_column (str): The name of the column containing the sample type information. Default is &#39;sample_type&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None: The DataFrame is modified in-place.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the DataFrame does not contain the required columns.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure the DataFrame contains the required columns</span>
+    <span class="k">if</span> <span class="n">sample_type_column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="n">rate_column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;DataFrame must contain both the specified rate column and sample type column in order to adjust for background activity.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Calculate the mean background rate from negative control samples</span>
+    <span class="n">background_rate_mean</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">sample_type_column</span><span class="p">]</span> <span class="o">==</span> <span class="n">negative_control</span><span class="p">][</span>
+        <span class="n">rate_column</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="c1"># Subtract the background rate from all rates</span>
+    <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rate_column</span><span class="si">}</span><span class="s2">_minus_background&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">rate_column</span><span class="p">]</span> <span class="o">-</span> <span class="n">background_rate_mean</span>
+
+    <span class="c1"># Clip any negative rates to epsilon</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rate_column</span><span class="si">}</span><span class="s2">_minus_background&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rate_column</span><span class="si">}</span><span class="s2">_minus_background&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="n">epsilon</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="fit_line">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.utils.fit_line">[docs]</a>
+<span class="k">def</span> <span class="nf">fit_line</span><span class="p">(</span><span class="n">group</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">x_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fits a linear model to the data in the specified group using the given x and y columns.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        group (pd.DataFrame): A DataFrame group containing the data to fit.</span>
+<span class="sd">        x_column (str): The name of the column to use as the independent variable.</span>
+<span class="sd">        y_column (str): The name of the column to use as the dependent variable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.Series: A Series containing the slope (rate), intercept, and other statistics from the linear regression.</span>
+<span class="sd">            - &quot;rate&quot;: The slope of the fitted line.</span>
+<span class="sd">            - &quot;intercept&quot;: The y-intercept of the fitted line.</span>
+<span class="sd">            - &quot;r_value&quot;: The correlation coefficient.</span>
+<span class="sd">            - &quot;p_value&quot;: The two-sided p-value for a hypothesis test whose null hypothesis is that the slope is zero.</span>
+<span class="sd">            - &quot;std_err&quot;: The standard error of the estimated gradient.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Perform linear regression using scipy&#39;s linregress</span>
+    <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">std_err</span> <span class="o">=</span> <span class="n">linregress</span><span class="p">(</span>
+        <span class="n">group</span><span class="p">[</span><span class="n">x_column</span><span class="p">],</span> <span class="n">group</span><span class="p">[</span><span class="n">y_column</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Return the results as a pandas Series</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="n">slope</span><span class="p">,</span>
+            <span class="s2">&quot;intercept&quot;</span><span class="p">:</span> <span class="n">intercept</span><span class="p">,</span>
+            <span class="s2">&quot;r_value&quot;</span><span class="p">:</span> <span class="n">r_value</span><span class="p">,</span>
+            <span class="s2">&quot;p_value&quot;</span><span class="p">:</span> <span class="n">p_value</span><span class="p">,</span>
+            <span class="s2">&quot;std_err&quot;</span><span class="p">:</span> <span class="n">std_err</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="add_rate_column">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.utils.add_rate_column">[docs]</a>
+<span class="k">def</span> <span class="nf">add_rate_column</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">x_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">y_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">group_by_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds specified columns to the DataFrame by fitting a linear model to the specified x and y columns for each group.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (pd.DataFrame): A DataFrame containing the data to fit.</span>
+<span class="sd">        x_column (str): The name of the column to use as the independent variable.</span>
+<span class="sd">        y_column (str): The name of the column to use as the dependent variable.</span>
+<span class="sd">        group_by_columns (list): A list of columns to group the data by before fitting the model. E.g., &quot;well&quot;, or &quot;replicate&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: A new DataFrame with specified columns added, representing the results of the linear fit for each group. The new columns include:</span>
+<span class="sd">            - &quot;rate&quot;: The slope of the fitted line.</span>
+<span class="sd">            - &quot;intercept&quot;: The y-intercept of the fitted line.</span>
+<span class="sd">            - &quot;r_value&quot;: The correlation coefficient.</span>
+<span class="sd">            - &quot;p_value&quot;: The two-sided p-value for a hypothesis test whose null hypothesis is that the slope is zero.</span>
+<span class="sd">            - &quot;std_err&quot;: The standard error of the estimated gradient.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure we are not adding columns that already exist in the DataFrame</span>
+    <span class="n">columns_to_add</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;rate&quot;</span><span class="p">,</span> <span class="s2">&quot;intercept&quot;</span><span class="p">,</span> <span class="s2">&quot;r_value&quot;</span><span class="p">,</span> <span class="s2">&quot;p_value&quot;</span><span class="p">,</span> <span class="s2">&quot;std_err&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
+        <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns_to_add</span>
+    <span class="p">),</span> <span class="s2">&quot;Columns to add already exist in DataFrame.&quot;</span>
+
+    <span class="c1"># Apply the fit_line function to each group and reset index</span>
+    <span class="n">df_fits</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group_by_columns</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">fit_line</span><span class="p">,</span> <span class="n">x_column</span><span class="o">=</span><span class="n">x_column</span><span class="p">,</span> <span class="n">y_column</span><span class="o">=</span><span class="n">y_column</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Merge the results back into the original DataFrame</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_fits</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">group_by_columns</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_michaelis_menten_constants">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.utils.calculate_michaelis_menten_constants">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_michaelis_menten_constants</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">substrate_concentration_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;substrate_concentration&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate Michaelis-Menten constants Vmax and Km.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (pd.DataFrame): A DataFrame containing columns for substrate concentration and initial rates.</span>
+<span class="sd">        substrate_concentration_column (str): The name of the column containing the substrate concentrations. Default is &#39;substrate_concentration&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: A dictionary containing Vmax and Km.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">michaelis_menten</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">Vmax</span><span class="p">,</span> <span class="n">Km</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">Vmax</span> <span class="o">*</span> <span class="n">S</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Km</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">substrate_concentration_column</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">substrate_concentration_column</span><span class="si">}</span><span class="s2">&#39; not found in the DataFrame.&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="s2">&quot;rate_minus_background&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+    <span class="p">),</span> <span class="s2">&quot;Column &#39;rate_minus_background&#39; not found in the DataFrame. Please calculate and adjust rates for background first.&quot;</span>
+
+    <span class="n">initial_rates</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;rate_minus_background&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">substrate_concentrations</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">substrate_concentration_column</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># Fit the Michaelis-Menten equation to the data</span>
+    <span class="n">popt</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span>
+        <span class="n">michaelis_menten</span><span class="p">,</span>
+        <span class="n">substrate_concentrations</span><span class="p">,</span>
+        <span class="n">initial_rates</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">Vmax</span><span class="p">,</span> <span class="n">Km</span> <span class="o">=</span> <span class="n">popt</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Vmax&quot;</span><span class="p">:</span> <span class="n">Vmax</span><span class="p">,</span> <span class="s2">&quot;Km&quot;</span><span class="p">:</span> <span class="n">Km</span><span class="p">}</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Nathaniel Corley.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,445 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kinetics_kalculator package &mdash; Kinetic Kalculator 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="kinetics_kalculator" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Kinetic Kalculator
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">kinetics_kalculator</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">kinetics_kalculator package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-kinetics_kalculator.kinetics_kalculator">kinetics_kalculator.kinetics_kalculator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#kinetics_kalculator.kinetics_kalculator.KineticsKalculator"><code class="docutils literal notranslate"><span class="pre">KineticsKalculator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-kinetics_kalculator.utils">kinetics_kalculator.utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#kinetics_kalculator.utils.add_rate_column"><code class="docutils literal notranslate"><span class="pre">add_rate_column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kinetics_kalculator.utils.adjust_rates_for_background"><code class="docutils literal notranslate"><span class="pre">adjust_rates_for_background()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kinetics_kalculator.utils.calculate_michaelis_menten_constants"><code class="docutils literal notranslate"><span class="pre">calculate_michaelis_menten_constants()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kinetics_kalculator.utils.convert_to_concentration_using_linear_standard_curve"><code class="docutils literal notranslate"><span class="pre">convert_to_concentration_using_linear_standard_curve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kinetics_kalculator.utils.filter_by_time_range"><code class="docutils literal notranslate"><span class="pre">filter_by_time_range()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kinetics_kalculator.utils.fit_line"><code class="docutils literal notranslate"><span class="pre">fit_line()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-kinetics_kalculator">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Kinetic Kalculator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">kinetics_kalculator</a></li>
+      <li class="breadcrumb-item active">kinetics_kalculator package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/kinetics_kalculator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="kinetics-kalculator-package">
+<h1>kinetics_kalculator package<a class="headerlink" href="#kinetics-kalculator-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-kinetics_kalculator.kinetics_kalculator">
+<span id="kinetics-kalculator-kinetics-kalculator-module"></span><h2>kinetics_kalculator.kinetics_kalculator module<a class="headerlink" href="#module-kinetics_kalculator.kinetics_kalculator" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="kinetics_kalculator.kinetics_kalculator.KineticsKalculator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kinetics_kalculator.kinetics_kalculator.</span></span><span class="sig-name descname"><span class="pre">KineticsKalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_curve_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kinetics_kalculator/kinetics_kalculator.html#KineticsKalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.kinetics_kalculator.KineticsKalculator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="kinetics_kalculator.kinetics_kalculator.KineticsKalculator.adjust_rates_for_background">
+<span class="sig-name descname"><span class="pre">adjust_rates_for_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_type_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sample_type'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'negative_control'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_negative_controls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kinetics_kalculator/kinetics_kalculator.html#KineticsKalculator.adjust_rates_for_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.adjust_rates_for_background" title="Link to this definition"></a></dt>
+<dd><p>Adjust the rates in the DataFrame by subtracting the provided background value.
+Adds a new column containing the adjusted rates, ‘{rate_column}_minus_background’, to the DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rate_column</strong> (<em>str</em>) – The name of the column containing the rates to adjust.</p></li>
+<li><p><strong>sample_type_column</strong> (<em>str</em>) – The name of the column containing the sample type information. Defaults to “sample_type”.</p></li>
+<li><p><strong>negative_control</strong> (<em>str</em>) – The value to use as the negative control. Defaults to “negative_control”.</p></li>
+<li><p><strong>remove_negative_controls</strong> (<em>bool</em>) – Whether to remove the negative control rows after adjusting the rates. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DataFrame is modified in-place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kinetics_kalculator.kinetics_kalculator.KineticsKalculator.calculate_rates">
+<span class="sig-name descname"><span class="pre">calculate_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_fit_summary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_type_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sample_type'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'negative_control'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poor_fit_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kinetics_kalculator/kinetics_kalculator.html#KineticsKalculator.calculate_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.calculate_rates" title="Link to this definition"></a></dt>
+<dd><p>Calculate the rates of change in the ‘value’ column over time, and add a new column to the DataFrame
+containing the calculated rates.</p>
+<p>NOTE: The rates are calculated as the first derivative of the values with respect to time. We assume that
+the “value” column represents the appropriate unit (e.g., concentration).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_column</strong> (<em>str</em>) – The name of the column containing the time values.</p></li>
+<li><p><strong>value_column</strong> (<em>str</em>) – The name of the column containing the values to calculate rates from.</p></li>
+<li><p><strong>group_by_columns</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – The names of the columns to group the data by before calculating rates. E.g., “well” or “replicate”.</p></li>
+<li><p><strong>sample_type_column</strong> (<em>str</em>) – The name of the column containing the sample type information. Defaults to “sample_type”. Used for validation of results.</p></li>
+<li><p><strong>negative_control</strong> (<em>str</em>) – The value to use as the negative control. Defaults to “negative_control”. Used for validation of results.</p></li>
+<li><p><strong>poor_fit_threshold</strong> (<em>float</em>) – The threshold for determining a poor fit. Defaults to 0.5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DataFrame is modified in-place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kinetics_kalculator.kinetics_kalculator.KineticsKalculator.convert_values_to_concentration_with_standard_curve">
+<span class="sig-name descname"><span class="pre">convert_values_to_concentration_with_standard_curve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kinetics_kalculator/kinetics_kalculator.html#KineticsKalculator.convert_values_to_concentration_with_standard_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.convert_values_to_concentration_with_standard_curve" title="Link to this definition"></a></dt>
+<dd><p>Convert the ‘value’ column in the DataFrame to concentration units using the provided slope and y-intercept
+of the standard curve.</p>
+<p>NOTE: Only supports linear standard curves of the form y = mx + c.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The DataFrame is modified in-place.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kinetics_kalculator.kinetics_kalculator.KineticsKalculator.label_replicates_and_conditions">
+<span class="sig-name descname"><span class="pre">label_replicates_and_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">well_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'well'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kinetics_kalculator/kinetics_kalculator.html#KineticsKalculator.label_replicates_and_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.label_replicates_and_conditions" title="Link to this definition"></a></dt>
+<dd><p>Label rows in the dataframe that represent the same experimental conditions; e.g., replicates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kinetics_kalculator.kinetics_kalculator.KineticsKalculator.plot_concentration_vs_time_for_each_condition">
+<span class="sig-name descname"><span class="pre">plot_concentration_vs_time_for_each_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'condition'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concentration_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'M'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kinetics_kalculator/kinetics_kalculator.html#KineticsKalculator.plot_concentration_vs_time_for_each_condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.plot_concentration_vs_time_for_each_condition" title="Link to this definition"></a></dt>
+<dd><p>Plot measured target concentration over time for each experimental condition in the DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_column</strong> (<em>str</em>) – The name of the column containing the time values. Defaults to ‘time’.</p></li>
+<li><p><strong>value_column</strong> (<em>str</em>) – The name of the column containing the concentration values. Defaults to ‘value’.</p></li>
+<li><p><strong>condition_column</strong> (<em>str</em>) – The name of the column containing the condition labels. Defaults to ‘condition’.</p></li>
+<li><p><strong>time_units</strong> (<em>str</em>) – The units of time to display on the x-axis. Defaults to ‘s’.</p></li>
+<li><p><strong>concentration_units</strong> (<em>str</em>) – The units of concentration to display on the y-axis. Defaults to ‘M’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Displays a plot for each condition showing substrate concentration over time.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If any of the specified columns do not exist in the DataFrame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kinetics_kalculator.kinetics_kalculator.KineticsKalculator.plot_michaelis_menten_curve">
+<span class="sig-name descname"><span class="pre">plot_michaelis_menten_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substrate_concentration_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'substrate_concentration'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/kinetics_kalculator/kinetics_kalculator.html#KineticsKalculator.plot_michaelis_menten_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.plot_michaelis_menten_curve" title="Link to this definition"></a></dt>
+<dd><p>Plot the Michaelis-Menten curve using Seaborn.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kinetics_kalculator.kinetics_kalculator.KineticsKalculator.subset_dataframe_to_time_range">
+<span class="sig-name descname"><span class="pre">subset_dataframe_to_time_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower_bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kinetics_kalculator/kinetics_kalculator.html#KineticsKalculator.subset_dataframe_to_time_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.subset_dataframe_to_time_range" title="Link to this definition"></a></dt>
+<dd><p>Subset the underlying DataFrame to only include rows where the ‘time’ column is within the specified range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower_bound</strong> (<em>float</em>) – The lower bound of the time range.</p></li>
+<li><p><strong>upper_bound</strong> (<em>float</em>) – The upper bound of the time range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DataFrame is modified in-place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the DataFrame does not contain the required ‘time’ column.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-kinetics_kalculator.utils">
+<span id="kinetics-kalculator-utils-module"></span><h2>kinetics_kalculator.utils module<a class="headerlink" href="#module-kinetics_kalculator.utils" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="kinetics_kalculator.utils.add_rate_column">
+<span class="sig-prename descclassname"><span class="pre">kinetics_kalculator.utils.</span></span><span class="sig-name descname"><span class="pre">add_rate_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/kinetics_kalculator/utils.html#add_rate_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.utils.add_rate_column" title="Link to this definition"></a></dt>
+<dd><p>Adds specified columns to the DataFrame by fitting a linear model to the specified x and y columns for each group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – A DataFrame containing the data to fit.</p></li>
+<li><p><strong>x_column</strong> (<em>str</em>) – The name of the column to use as the independent variable.</p></li>
+<li><p><strong>y_column</strong> (<em>str</em>) – The name of the column to use as the dependent variable.</p></li>
+<li><p><strong>group_by_columns</strong> (<em>list</em>) – A list of columns to group the data by before fitting the model. E.g., “well”, or “replicate”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A new DataFrame with specified columns added, representing the results of the linear fit for each group. The new columns include:</dt><dd><ul class="simple">
+<li><p>”rate”: The slope of the fitted line.</p></li>
+<li><p>”intercept”: The y-intercept of the fitted line.</p></li>
+<li><p>”r_value”: The correlation coefficient.</p></li>
+<li><p>”p_value”: The two-sided p-value for a hypothesis test whose null hypothesis is that the slope is zero.</p></li>
+<li><p>”std_err”: The standard error of the estimated gradient.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kinetics_kalculator.utils.adjust_rates_for_background">
+<span class="sig-prename descclassname"><span class="pre">kinetics_kalculator.utils.</span></span><span class="sig-name descname"><span class="pre">adjust_rates_for_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_type_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sample_type'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/kinetics_kalculator/utils.html#adjust_rates_for_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.utils.adjust_rates_for_background" title="Link to this definition"></a></dt>
+<dd><p>Adjusts the rates in the DataFrame to account for background rates using a specified negative control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – A DataFrame containing a sample type column and a column for rates.</p></li>
+<li><p><strong>negative_control</strong> (<em>str</em>) – The value in the sample type column to identify negative control samples.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – A small positive value to replace any negative rates after background adjustment.</p></li>
+<li><p><strong>rate_column</strong> (<em>str</em>) – The name of the column containing the rates to be adjusted. Default is ‘rate’.</p></li>
+<li><p><strong>sample_type_column</strong> (<em>str</em>) – The name of the column containing the sample type information. Default is ‘sample_type’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DataFrame is modified in-place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the DataFrame does not contain the required columns.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kinetics_kalculator.utils.calculate_michaelis_menten_constants">
+<span class="sig-prename descclassname"><span class="pre">kinetics_kalculator.utils.</span></span><span class="sig-name descname"><span class="pre">calculate_michaelis_menten_constants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">substrate_concentration_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'substrate_concentration'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/kinetics_kalculator/utils.html#calculate_michaelis_menten_constants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.utils.calculate_michaelis_menten_constants" title="Link to this definition"></a></dt>
+<dd><p>Calculate Michaelis-Menten constants Vmax and Km.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – A DataFrame containing columns for substrate concentration and initial rates.</p></li>
+<li><p><strong>substrate_concentration_column</strong> (<em>str</em>) – The name of the column containing the substrate concentrations. Default is ‘substrate_concentration’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing Vmax and Km.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kinetics_kalculator.utils.convert_to_concentration_using_linear_standard_curve">
+<span class="sig-prename descclassname"><span class="pre">kinetics_kalculator.utils.</span></span><span class="sig-name descname"><span class="pre">convert_to_concentration_using_linear_standard_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_intercept</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/kinetics_kalculator/utils.html#convert_to_concentration_using_linear_standard_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.utils.convert_to_concentration_using_linear_standard_curve" title="Link to this definition"></a></dt>
+<dd><p>Converts generic values to concentrations.</p>
+<p>Convert the ‘value’ column in the DataFrame to concentration units using the provided slope and y-intercept
+of the standard curve.</p>
+<p>NOTE: Only support linear standard curves of the form y = mx + c.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – A DataFrame containing a ‘value’ column.</p></li>
+<li><p><strong>slope</strong> (<em>float</em>) – The slope of the standard curve.</p></li>
+<li><p><strong>y_intercept</strong> (<em>float</em>) – The y-intercept of the standard curve.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DataFrame with the ‘value’ column converted to concentration units.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the DataFrame does not contain the required ‘value’ column.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]})</span>  <span class="c1"># E.g., units of absorbance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">convert_to_concentration_using_standard_curves</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
+<span class="go">   value</span>
+<span class="go">0    0.5</span>
+<span class="go">1    1.0</span>
+<span class="go">2    1.5</span>
+<span class="go">3    2.0</span>
+<span class="go">4    2.5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kinetics_kalculator.utils.filter_by_time_range">
+<span class="sig-prename descclassname"><span class="pre">kinetics_kalculator.utils.</span></span><span class="sig-name descname"><span class="pre">filter_by_time_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/kinetics_kalculator/utils.html#filter_by_time_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.utils.filter_by_time_range" title="Link to this definition"></a></dt>
+<dd><p>Filter the DataFrame to only include rows where the ‘time’ column is within the specified range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – A DataFrame containing a ‘time’ column.</p></li>
+<li><p><strong>lower_bound</strong> (<em>float</em>) – The lower bound of the time range.</p></li>
+<li><p><strong>upper_bound</strong> (<em>float</em>) – The upper bound of the time range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new DataFrame containing only the rows within the specified time range.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the DataFrame does not contain the required ‘time’ column.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kinetics_kalculator.utils.fit_line">
+<span class="sig-prename descclassname"><span class="pre">kinetics_kalculator.utils.</span></span><span class="sig-name descname"><span class="pre">fit_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="_modules/kinetics_kalculator/utils.html#fit_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kinetics_kalculator.utils.fit_line" title="Link to this definition"></a></dt>
+<dd><p>Fits a linear model to the data in the specified group using the given x and y columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group</strong> (<em>pd.DataFrame</em>) – A DataFrame group containing the data to fit.</p></li>
+<li><p><strong>x_column</strong> (<em>str</em>) – The name of the column to use as the independent variable.</p></li>
+<li><p><strong>y_column</strong> (<em>str</em>) – The name of the column to use as the dependent variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A Series containing the slope (rate), intercept, and other statistics from the linear regression.</dt><dd><ul class="simple">
+<li><p>”rate”: The slope of the fitted line.</p></li>
+<li><p>”intercept”: The y-intercept of the fitted line.</p></li>
+<li><p>”r_value”: The correlation coefficient.</p></li>
+<li><p>”p_value”: The two-sided p-value for a hypothesis test whose null hypothesis is that the slope is zero.</p></li>
+<li><p>”std_err”: The standard error of the estimated gradient.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-kinetics_kalculator">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-kinetics_kalculator" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="kinetics_kalculator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Nathaniel Corley.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

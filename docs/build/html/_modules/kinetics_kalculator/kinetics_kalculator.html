@@ -1,0 +1,497 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kinetics_kalculator.kinetics_kalculator &mdash; Kinetic Kalculator 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Kinetic Kalculator
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">kinetics_kalculator</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Kinetic Kalculator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">kinetics_kalculator.kinetics_kalculator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for kinetics_kalculator.kinetics_kalculator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">PathLike</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
+<span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
+
+<span class="kn">from</span> <span class="nn">kinetics_kalculator.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">add_rate_column</span><span class="p">,</span>
+    <span class="n">adjust_rates_for_background</span><span class="p">,</span>
+    <span class="n">convert_to_concentration_using_linear_standard_curve</span><span class="p">,</span>
+    <span class="n">filter_by_time_range</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="KineticsKalculator">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.kinetics_kalculator.KineticsKalculator">[docs]</a>
+<span class="k">class</span> <span class="nc">KineticsKalculator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">PathLike</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">standard_curve_parameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the KineticsKalculator by loading the data from the specified file path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data_path (Path | PathLike | pd.DataFrame | None): The path to the data file to load or the DataFrame itself. Supported file formats include:</span>
+<span class="sd">                - CSV: .csv</span>
+<span class="sd">                - Excel: .xls, .xlsx</span>
+<span class="sd">                - JSON: .json</span>
+<span class="sd">                - Parquet: .parquet</span>
+<span class="sd">                - Feather: .feather</span>
+<span class="sd">                - HDF5: .hdf</span>
+<span class="sd">                - Pickle: .pkl</span>
+<span class="sd">                If None, we expect the data to be set explicitly using the &#39;data&#39; attribute.</span>
+<span class="sd">            standard_curve_parameters (dict | None): A dictionary containing the parameters of the standard curve.</span>
+<span class="sd">                For example, {&quot;slope&quot;: 2, &quot;y_intercept&quot;: 1}, if using a linear standard curve of the form y = mx + c.</span>
+<span class="sd">                NOTE: Currently only linear standard curves are supported.</span>
+<span class="sd">            epsilon (float): A small value to add to the negative control values to avoid division by zero.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: The KineticsKalculator object is initialized with the loaded data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data_path</span>
+        <span class="k">elif</span> <span class="n">data_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Convert to a Path, if necessary</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+
+            <span class="c1"># Load data based on file extension</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">()</span>
+
+        <span class="c1"># Save the standard curve parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">standard_curve_parameters</span> <span class="o">=</span> <span class="n">standard_curve_parameters</span>
+
+    <span class="k">def</span> <span class="nf">_load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load data from the file path based on the file extension.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame: The loaded data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s2">&quot;.csv&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_extension</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.xls&quot;</span><span class="p">,</span> <span class="s2">&quot;.xlsx&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s2">&quot;.json&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s2">&quot;.parquet&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s2">&quot;.feather&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_feather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s2">&quot;.hdf&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s2">&quot;.pkl&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported file format: </span><span class="si">{</span><span class="n">file_extension</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="KineticsKalculator.label_replicates_and_conditions">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.label_replicates_and_conditions">[docs]</a>
+    <span class="k">def</span> <span class="nf">label_replicates_and_conditions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">condition_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">well_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;well&quot;</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Label rows in the dataframe that represent the same experimental conditions; e.g., replicates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">well_column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">well_column</span><span class="si">}</span><span class="s2">&#39; not found in the DataFrame.&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">condition_columns</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Columns </span><span class="si">{</span><span class="n">condition_columns</span><span class="si">}</span><span class="s2"> not found in the DataFrame.&quot;</span>
+
+        <span class="c1"># Create a &quot;condition&quot; column, which is unique for each set of conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">condition_columns</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">condition_columns</span><span class="p">),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Create a &quot;replicate&quot; column, which is unique for each well within a condition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;replicate_n&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="n">well_column</span><span class="p">])</span><span class="o">.</span><span class="n">cumcount</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KineticsKalculator.calculate_rates">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.calculate_rates">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_rates</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">time_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">value_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">group_by_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">print_fit_summary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">sample_type_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sample_type&quot;</span><span class="p">,</span>
+        <span class="n">negative_control</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;negative_control&quot;</span><span class="p">,</span>
+        <span class="n">poor_fit_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the rates of change in the &#39;value&#39; column over time, and add a new column to the DataFrame</span>
+<span class="sd">        containing the calculated rates.</span>
+
+<span class="sd">        NOTE: The rates are calculated as the first derivative of the values with respect to time. We assume that</span>
+<span class="sd">        the &quot;value&quot; column represents the appropriate unit (e.g., concentration).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time_column (str): The name of the column containing the time values.</span>
+<span class="sd">            value_column (str): The name of the column containing the values to calculate rates from.</span>
+<span class="sd">            group_by_columns (list[str]): The names of the columns to group the data by before calculating rates. E.g., &quot;well&quot; or &quot;replicate&quot;.</span>
+<span class="sd">            sample_type_column (str): The name of the column containing the sample type information. Defaults to &quot;sample_type&quot;. Used for validation of results.</span>
+<span class="sd">            negative_control (str): The value to use as the negative control. Defaults to &quot;negative_control&quot;. Used for validation of results.</span>
+<span class="sd">            poor_fit_threshold (float): The threshold for determining a poor fit. Defaults to 0.5.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: The DataFrame is modified in-place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Calculate the rates of change</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">add_rate_column</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">time_column</span><span class="p">,</span> <span class="n">value_column</span><span class="p">,</span> <span class="n">group_by_columns</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Assert that necessary columns are present</span>
+        <span class="n">columns_to_check</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;rate&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;intercept&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;r_value&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;p_value&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;std_err&quot;</span><span class="p">,</span>
+            <span class="n">sample_type_column</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns_to_check</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Columns </span><span class="si">{</span><span class="n">columns_to_check</span><span class="si">}</span><span class="s2"> not found in the DataFrame.&quot;</span>
+
+        <span class="c1"># Assert that within a group, the added columns are constant</span>
+        <span class="n">grouped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group_by_columns</span><span class="p">)[</span><span class="n">columns_to_check</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns_to_check</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">grouped</span><span class="o">.</span><span class="n">nunique</span><span class="p">()[</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> is not constant within each group.&quot;</span>
+
+        <span class="k">if</span> <span class="n">print_fit_summary</span><span class="p">:</span>
+            <span class="c1"># Print a table showing the &quot;rate&quot;, &quot;intercept&quot;, &quot;r-value&quot;, &quot;p-value&quot;, and &quot;std_err&quot; for each group</span>
+            <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Rates of Change by Group&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Add columns to the table</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">group_by_columns</span> <span class="o">+</span> <span class="n">columns_to_check</span><span class="p">:</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Group the data and add rows to the table</span>
+            <span class="n">grouped_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group_by_columns</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">grouped_data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="c1"># Check if the fit is poor and the sample type is not negative control</span>
+                <span class="n">r_squared</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;r_value&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="n">is_poor_fit</span> <span class="o">=</span> <span class="n">r_squared</span> <span class="o">&lt;</span> <span class="n">poor_fit_threshold</span>
+                <span class="n">is_not_negative_control</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">sample_type_column</span><span class="p">]</span> <span class="o">!=</span> <span class="n">negative_control</span>
+
+                <span class="n">row_style</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span> <span class="k">if</span> <span class="n">is_poor_fit</span> <span class="ow">and</span> <span class="n">is_not_negative_control</span> <span class="k">else</span> <span class="kc">None</span>
+
+                <span class="c1"># Format each value to 4 decimal places if it&#39;s a float</span>
+                <span class="n">formatted_row</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">group_by_columns</span> <span class="o">+</span> <span class="n">columns_to_check</span>
+                <span class="p">]</span>
+
+                <span class="c1"># Add row with conditional styling</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="o">*</span><span class="n">formatted_row</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">row_style</span><span class="p">)</span>
+
+                <span class="c1"># Print a warning if the fit is poor and the sample type is not negative control</span>
+                <span class="k">if</span> <span class="n">is_poor_fit</span> <span class="ow">and</span> <span class="n">is_not_negative_control</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Poor fit detected for group </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">group_by_columns</span><span class="p">]</span><span class="si">}</span><span class="s2"> with r^2 = </span><span class="si">{</span><span class="n">r_squared</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+            <span class="c1"># Print the table</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KineticsKalculator.convert_values_to_concentration_with_standard_curve">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.convert_values_to_concentration_with_standard_curve">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert_values_to_concentration_with_standard_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the &#39;value&#39; column in the DataFrame to concentration units using the provided slope and y-intercept</span>
+<span class="sd">        of the standard curve.</span>
+
+<span class="sd">        NOTE: Only supports linear standard curves of the form y = mx + c.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: The DataFrame is modified in-place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ensure the standard curve parameters are provided</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">standard_curve_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">&quot;Standard curve parameters are required.&quot;</span>
+
+        <span class="c1"># Unpack the standard curve parameters and apply the conversion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">convert_to_concentration_using_linear_standard_curve</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">standard_curve_parameters</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KineticsKalculator.subset_dataframe_to_time_range">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.subset_dataframe_to_time_range">[docs]</a>
+    <span class="k">def</span> <span class="nf">subset_dataframe_to_time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower_bound</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subset the underlying DataFrame to only include rows where the &#39;time&#39; column is within the specified range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lower_bound (float): The lower bound of the time range.</span>
+<span class="sd">            upper_bound (float): The upper bound of the time range.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: The DataFrame is modified in-place.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the DataFrame does not contain the required &#39;time&#39; column.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">filter_by_time_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">lower_bound</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KineticsKalculator.adjust_rates_for_background">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.adjust_rates_for_background">[docs]</a>
+    <span class="k">def</span> <span class="nf">adjust_rates_for_background</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">rate_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">sample_type_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sample_type&quot;</span><span class="p">,</span>
+        <span class="n">negative_control</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;negative_control&quot;</span><span class="p">,</span>
+        <span class="n">remove_negative_controls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adjust the rates in the DataFrame by subtracting the provided background value.</span>
+<span class="sd">        Adds a new column containing the adjusted rates, &#39;{rate_column}_minus_background&#39;, to the DataFrame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rate_column (str): The name of the column containing the rates to adjust.</span>
+<span class="sd">            sample_type_column (str): The name of the column containing the sample type information. Defaults to &quot;sample_type&quot;.</span>
+<span class="sd">            negative_control (str): The value to use as the negative control. Defaults to &quot;negative_control&quot;.</span>
+<span class="sd">            remove_negative_controls (bool): Whether to remove the negative control rows after adjusting the rates. Defaults to True.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: The DataFrame is modified in-place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">adjust_rates_for_background</span><span class="p">(</span>
+            <span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">rate_column</span><span class="o">=</span><span class="n">rate_column</span><span class="p">,</span>
+            <span class="n">sample_type_column</span><span class="o">=</span><span class="n">sample_type_column</span><span class="p">,</span>
+            <span class="n">negative_control</span><span class="o">=</span><span class="n">negative_control</span><span class="p">,</span>
+            <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Remove the negative control rows if specified</span>
+        <span class="k">if</span> <span class="n">remove_negative_controls</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">sample_type_column</span><span class="p">]</span> <span class="o">!=</span> <span class="n">negative_control</span><span class="p">]</span>
+            <span class="c1"># Assert that the negative control rows have been removed</span>
+            <span class="k">assert</span> <span class="n">negative_control</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">sample_type_column</span><span class="p">]</span><span class="o">.</span><span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="KineticsKalculator.plot_concentration_vs_time_for_each_condition">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.plot_concentration_vs_time_for_each_condition">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_concentration_vs_time_for_each_condition</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">time_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span>
+        <span class="n">value_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+        <span class="n">condition_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;condition&quot;</span><span class="p">,</span>
+        <span class="n">time_units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
+        <span class="n">concentration_units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot measured target concentration over time for each experimental condition in the DataFrame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time_column (str): The name of the column containing the time values. Defaults to &#39;time&#39;.</span>
+<span class="sd">            value_column (str): The name of the column containing the concentration values. Defaults to &#39;value&#39;.</span>
+<span class="sd">            condition_column (str): The name of the column containing the condition labels. Defaults to &#39;condition&#39;.</span>
+<span class="sd">            time_units (str): The units of time to display on the x-axis. Defaults to &#39;s&#39;.</span>
+<span class="sd">            concentration_units (str): The units of concentration to display on the y-axis. Defaults to &#39;M&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: Displays a plot for each condition showing substrate concentration over time.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If any of the specified columns do not exist in the DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">time_column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">time_column</span><span class="si">}</span><span class="s2">&#39; not found in the DataFrame.&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">value_column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">value_column</span><span class="si">}</span><span class="s2">&#39; not found in the DataFrame.&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">condition_column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">condition_column</span><span class="si">}</span><span class="s2">&#39; not found in the DataFrame.&quot;</span>
+
+        <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+        <span class="n">unique_conditions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">condition_column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">condition</span> <span class="ow">in</span> <span class="n">unique_conditions</span><span class="p">:</span>
+            <span class="n">condition_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">condition_column</span><span class="p">]</span> <span class="o">==</span> <span class="n">condition</span><span class="p">]</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+            <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">condition_data</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">time_column</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">value_column</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target Concentration vs Time for Condition: </span><span class="si">{</span><span class="n">condition</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time (</span><span class="si">{</span><span class="n">time_units</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target Concentration (</span><span class="si">{</span><span class="n">concentration_units</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="KineticsKalculator.plot_michaelis_menten_curve">
+<a class="viewcode-back" href="../../kinetics_kalculator.html#kinetics_kalculator.kinetics_kalculator.KineticsKalculator.plot_michaelis_menten_curve">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_michaelis_menten_curve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">substrate_concentration_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;substrate_concentration&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the Michaelis-Menten curve using Seaborn.&quot;&quot;&quot;</span>
+        <span class="n">constants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_michaelis_menten_constants</span><span class="p">()</span>
+        <span class="n">Vmax</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s2">&quot;Vmax&quot;</span><span class="p">]</span>
+        <span class="n">Km</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s2">&quot;Km&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Plot data points</span>
+        <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;whitegrid&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+        <span class="c1"># Scatter plot of the data</span>
+        <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="s2">&quot;substrate_concentration&quot;</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="s2">&quot;rate_minus_background&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Fit curve</span>
+        <span class="n">S_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">substrate_concentration_column</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">rate_fit</span> <span class="o">=</span> <span class="p">(</span><span class="n">Vmax</span> <span class="o">*</span> <span class="n">S_fit</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Km</span> <span class="o">+</span> <span class="n">S_fit</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">S_fit</span><span class="p">,</span>
+            <span class="n">rate_fit</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Michaelis-Menten Fit Parameters: $V_</span><span class="se">{{</span><span class="s2">max</span><span class="se">}}</span><span class="s2">=</span><span class="si">{</span><span class="n">Vmax</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">$, $K_m=</span><span class="si">{</span><span class="n">Km</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Substrate Concentration&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Initial Rate&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Michaelis-Menten Kinetics&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+</div>
+
+
+    <span class="c1"># Things to plot:</span>
+    <span class="c1"># - Plot concentration over time for one condition (any) before calculating rates and adjusting for background</span>
+    <span class="c1"># - If replicates, see concentration over time witht he mean and variance plotted</span>
+    <span class="c1"># CONDITION: Specified by the user.</span>
+    <span class="c1"># Specify condition, then calculate replicates for me (indices within a condition)</span>
+
+    <span class="c1"># Plot: x-axis: time, y-axis: concentration, with error bars (for each condition)</span>
+    <span class="c1"># See: https://www.biorxiv.org/content/10.1101/2024.08.29.610411v1.full.pdf</span>
+
+    <span class="c1"># Well-mapping</span>
+
+    <span class="c1"># Reference: https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Nathaniel Corley.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
