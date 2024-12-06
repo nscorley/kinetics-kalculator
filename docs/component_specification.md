@@ -1,94 +1,118 @@
 # Component Specification: Kinetics Kalculator
 
-## Software Components
+## Inputs
 
-### 1. Data Manager
+### Data Specification
 
-**Description:**  
-The Data Manager is responsible for handling the input and output of experimental data. It provides functionalities for loading data from various sources, validating the data against predefined rules, and managing data transformations required for analysis.
+The input data must be in a Pandas DataFrame format or a file path to a supported file type (CSV, Excel, JSON, Parquet, Feather, HDF5, Pickle). The DataFrame should adhere to the following structure:
 
-**Inputs:**
--  Experiment Mapping File
--  Machine Output File
+| Name                   | Type        | Required | Description                                                                 |
+|------------------------|-------------|----------|-----------------------------------------------------------------------------|
+| **time**               | float       | Yes      | The time at which each measurement was taken.  Can be any unit.|
+| **value**              | float       | Yes      | The measured value (e.g., absorbance) that will be converted to concentration. Can be any unit.|
+| **well**               | string      | Yes      | Identifier for the well or sample location in the experimental setup.        |
+| **substrate_concentration** | float   | Yes      | Concentration of the substrate used in the experiment (units: molarity)  |
+| **enzyme_concentration**    | float   | Yes      | Concentration of the enzyme used in the experiment (units: molarity)
+| **sample_type**        | string      | Yes      | Type of sample, such as "negative_control", or "sample".            |
 
-**Outputs:**
--  Validated and structured dataframe ready for analysis
--  Error logs detailing any validation issues
+Throughout the execution of the pipeline, additional pipelines will be added. Namely:
 
-**Functionalities:**
--  Load data from CSV or Excel files into dataframes.
--  Validate data types and ensure the uniqueness of (plate_number, well) combinations.
--  Check for filled and non-null values in critical columns such as time and value.
--  Automatically assign replicate numbers if not provided.
+| Name                   | Type        | Description                                                                 |
+|------------------------|-------------|-----------------------------------------------------------------------------|
+| **condition**          | string      | Generated experimental condition description, typically a combination of substrate and enzyme concentrations. |
+| **rate**               | float       | Calculated rate of change for each condition.                               |
+| **intercept**          | float       | Intercept from the linear fit used to calculate the rate.                   |
+| **r_value**            | float       | Correlation coefficient from the linear fit.                                |
+| **p_value**            | float       | P-value from the hypothesis test for the linear fit slope.                  |
+| **std_err**            | float       | Standard error of the estimated gradient.                                   |
+| **rate_minus_background** | float | Rate measurment with background activity removed. Used to calculate final kinetic constants.
 
-### 2. Analysis Engine
+However, should the user have an existing column (e.g., condition)
 
-**Description:**  
-The Analysis Engine performs all computational tasks required to transform raw data into meaningful kinetic parameters. It encapsulates the core analytical capabilities of the Kinetics Kalculator.
+## Software Component
 
-**Inputs:**
--  Dataframe from the Data Manager
-
-**Outputs:**
--  Dataframe with additional columns for concentrations, reaction rates, and other calculated parameters
-
-**Functionalities:**
--  Convert raw measurement values to concentrations using standard curves.
--  Filter data by specified time ranges.
--  Compute reaction rates through linear regression.
--  Remove background absorbance by fitting linear models to control samples.
-
-### 3. Visualization Manager
+### KineticsKalculator
 
 **Description:**  
-The Visualization Manager is responsible for generating visual representations of the kinetic data. It provides users with insights through plots and graphs, aiding in the interpretation of results.
+The `KineticsKalculator` class is the central organizing entity responsible for loading, analyzing, and visualizing biochemical kinetics data. 
+It processes a single DataFrame, performing data transformations and computations to derive kinetic parameters.
+All class methods operate on this dataframe, either manipulating data, adding columns, or plotting visualization.
 
 **Inputs:**
--  Processed dataframe from the Analysis Engine
+-    `data_path`: Path to data file or a Pandas DataFrame. See `Data Specification` above for a data dictionary of the input.
+-    `standard_curve_parameters`: Dictionary containing keys `slope` and `y-intercept` for standard curve conversion. Only required if performing
+   conversion from values (e.g., absorbance) to concentrations.
 
 **Outputs:**
--  Graphical plots such as concentration vs. time, reaction rates, and Michaelis-Menten curves
+-    Processed DataFrame with additional columns for concentrations, reaction rates, and other calculated parameters.
+-    Graphical plots for data visualization.
 
 **Functionalities:**
--  Generate line plots, scatter plots, and bar charts for different parameters.
--  Customize visualizations based on user preferences (e.g., color schemes, labels).
--  Export plots to various formats (e.g., PNG, PDF) for reporting and presentations.
+Note: Functionalities are grouped logically by category, not in order that they will be used.
+
+1. **Initialization:**
+   - Load data from specified file path or DataFrame, using the generic `_load_data` class method
+   - Store standard curve parameters for later use in concentration conversion.
+
+2. **Data Labeling:**
+   - `label_replicates_and_conditions`: Label rows in the DataFrame to identify replicates and conditions. This should not be required, if the column already exists.
+      For example, in many cases, experimentalists might have multiple replicates of a given condition to reduce variance and increase result confidence. They may want to 
+      average over these "replicates."
+     - **Parameters:** `condition_columns`, `well_column` (default: "well").
+
+3. **Concentration Conversion:**
+   - `convert_values_to_concentration_with_standard_curve`: Convert raw measurement values to concentrations using standard curve parameters.
+
+5. **Data Filtering:**
+   - `subset_dataframe_to_time_range`: Filter data to include only rows within a specified time range.
+     - **Parameters:** `lower_bound`, `upper_bound`.
+
+6. **Rate Calculation:**
+   - `calculate_rates`: Compute reaction rates from concentration data.
+     - **Parameters:** `time_column`, `value_column`, `group_by_columns` (subsets within which to perform the linear fit), `print_fit_summary` (whether to print a summary of the linear fit)
+
+7. **Background Adjustment:**
+   - `adjust_rates_for_background`: Adjust reaction rates by subtracting background values from negative controls. Support dynamic column and value selection for negative controls.
+     - **Parameters:** `rate_column`, `sample_type_column` (default: "sample_type"), `negative_control` (default: "negative_control"), `remove_negative_controls` (default: True).
+
+8. **Visualization:**
+   - `plot_concentration_vs_time_for_each_condition`: Plot concentration vs. time for each experimental condition. Produce a visually-appealing plot that can be used to determine appropriate time range.
+     - **Parameters:** `time_column` (default: "time"), `value_column` (default: "value"), `condition_column` (default: "condition"), `time_units` (default: "s"), `concentration_units` (default: "M").
+   - `plot_michaelis_menten_curve`: Plot the Michaelis-Menten curve using calculated kinetic parameters.
+     - **Parameters:** `substrate_concentration_column` (default: "substrate_concentration").
 
 ## Interactions to Accomplish Use Cases
 
 ### Use Case 1: Convert Concentration Using a Standard Curve
 
-1. **User** loads the experimental data into the system using the Data Manager.
-   - **Data Manager** reads the Experiment Mapping File and Machine Output File, validates the data, and outputs a structured dataframe.
+1. **User** initializes the `KineticsKalculator` with data and standard curve parameters.
+   - **KineticsKalculator** loads the data and applies the standard curve to convert raw values to concentrations.
 
-2. **User** initiates the conversion process.
-   - **Analysis Engine** receives the validated dataframe, applies the standard curve to convert raw values to concentrations, and updates the dataframe with new concentration columns.
+2. **User** reviews the converted data.
 
-3. **User** reviews the converted data.
-   - **Visualization Manager** can be used to plot the concentration data for visual inspection if needed.
+### Use Case 2: Filter Data by Time Range
 
-## Preliminary Plan
+1. **User** specifies the desired time range.
+   - **KineticsKalculator** filters the DataFrame to include only data within the specified time range.
 
-1. **Develop Data Manager:**
-   - Implement data loading and validation functions.
-   - Create error logging for validation issues.
+### Use Case 3: Compute Reaction Rates
 
-2. **Build Analysis Engine:**
-   - Develop functions for concentration conversion, rate computation, and background removal.
-   - Ensure integration with the Data Manager for seamless data flow.
+1. **User** ensures data is converted to concentrations.
+2. **User** initiates rate calculation.
+   - **KineticsKalculator** performs linear regression to compute reaction rates and updates the DataFrame.
 
-3. **Design Visualization Manager:**
-   - Implement basic plotting capabilities.
-   - Integrate with the Analysis Engine to visualize processed data.
+### Use Case 4: Remove Background Absorbance
 
-4. **Test and Validate:**
-   - Conduct unit testing for each component.
-   - Perform integration testing to ensure smooth interaction between components.
+1. **User** specifies the negative control.
+   - **KineticsKalculator** adjusts the reaction rates by subtracting background absorbance.
 
-5. **User Interface Development:**
-   - Create a user-friendly interface for interacting with the system.
-   - Incorporate feedback mechanisms for continuous improvement.
+### Use Case 5: Compute Michaelis-Menten Kinetics
 
-6. **Documentation and Deployment:**
-   - Write comprehensive user manuals and technical documentation.
-   - Deploy the application in a lab environment for initial user testing and feedback.
+1. **User** completes necessary data preparation.
+2. **User** computes Michaelis-Menten kinetics.
+   - **KineticsKalculator** derives kinetic parameters such as Km and Vmax.
+
+### Use Case 6: Visualize Results of Michaelis-Menten Kinetics
+
+1. **User** requests visualization of kinetic data.
+   - **KineticsKalculator** generates plots to illustrate Michaelis-Menten kinetics.

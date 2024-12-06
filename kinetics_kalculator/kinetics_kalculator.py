@@ -357,16 +357,3 @@ class KineticsKalculator:
         plt.legend()
         plt.tight_layout()
         plt.show()
-
-    # Things to plot:
-    # - Plot concentration over time for one condition (any) before calculating rates and adjusting for background
-    # - If replicates, see concentration over time witht he mean and variance plotted
-    # CONDITION: Specified by the user.
-    # Specify condition, then calculate replicates for me (indices within a condition)
-
-    # Plot: x-axis: time, y-axis: concentration, with error bars (for each condition)
-    # See: https://www.biorxiv.org/content/10.1101/2024.08.29.610411v1.full.pdf
-
-    # Well-mapping
-
-    # Reference: https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html
