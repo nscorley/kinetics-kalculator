@@ -27,9 +27,11 @@ Throughout the execution of the pipeline, additional pipelines will be added. Na
 | **std_err**            | float       | Standard error of the estimated gradient.                                   |
 | **rate_minus_background** | float | Rate measurment with background activity removed. Used to calculate final kinetic constants.
 
-However, should the user have an existing column (e.g., condition)
+However, should the user have an existing column (e.g., condition), we will also support ingesting that column at any step of the pipeline.
 
 ## Software Component
+
+![design](../assets/design.png)
 
 ### KineticsKalculator
 
@@ -38,7 +40,9 @@ The `KineticsKalculator` class is the central organizing entity responsible for 
 It processes a single DataFrame, performing data transformations and computations to derive kinetic parameters.
 All class methods operate on this dataframe, either manipulating data, adding columns, or plotting visualization.
 
-**Inputs:**
+Users will interact with this interface through a Jupyter notebook (see the example notebook in `examples`) for all visualizations and computations.
+
+**Inputs to `KineticsKalculator`:**
 -    `data_path`: Path to data file or a Pandas DataFrame. See `Data Specification` above for a data dictionary of the input.
 -    `standard_curve_parameters`: Dictionary containing keys `slope` and `y-intercept` for standard curve conversion. Only required if performing
    conversion from values (e.g., absorbance) to concentrations.
@@ -48,17 +52,16 @@ All class methods operate on this dataframe, either manipulating data, adding co
 -    Graphical plots for data visualization.
 
 **Functionalities:**
-Note: Functionalities are grouped logically by category, not in order that they will be used.
+Note: Functionalities are grouped logically by category, not in the order that they will be used.
 
 1. **Initialization:**
-   - Load data from specified file path or DataFrame, using the generic `_load_data` class method
-   - Store standard curve parameters for later use in concentration conversion.
+   - Load data from specified file path or DataFrame, using the generic `_load_data` class method, which accepts a wide range of file types
+   - Store standard curve parameters as a dictionary for later use in concentration conversion.
 
 2. **Data Labeling:**
    - `label_replicates_and_conditions`: Label rows in the DataFrame to identify replicates and conditions. This should not be required, if the column already exists.
-      For example, in many cases, experimentalists might have multiple replicates of a given condition to reduce variance and increase result confidence. They may want to 
-      average over these "replicates."
-     - **Parameters:** `condition_columns`, `well_column` (default: "well").
+      For example, in many cases, experimentalists might have multiple replicates of a given condition to reduce variance and increase result confidence. They may want to average over these "replicates."
+      - **Parameters:** `condition_columns`, `well_column` (default: "well").
 
 3. **Concentration Conversion:**
    - `convert_values_to_concentration_with_standard_curve`: Convert raw measurement values to concentrations using standard curve parameters.
@@ -83,36 +86,6 @@ Note: Functionalities are grouped logically by category, not in order that they 
 
 ## Interactions to Accomplish Use Cases
 
-### Use Case 1: Convert Concentration Using a Standard Curve
+![use cases](../assets/workflow.png)
 
-1. **User** initializes the `KineticsKalculator` with data and standard curve parameters.
-   - **KineticsKalculator** loads the data and applies the standard curve to convert raw values to concentrations.
-
-2. **User** reviews the converted data.
-
-### Use Case 2: Filter Data by Time Range
-
-1. **User** specifies the desired time range.
-   - **KineticsKalculator** filters the DataFrame to include only data within the specified time range.
-
-### Use Case 3: Compute Reaction Rates
-
-1. **User** ensures data is converted to concentrations.
-2. **User** initiates rate calculation.
-   - **KineticsKalculator** performs linear regression to compute reaction rates and updates the DataFrame.
-
-### Use Case 4: Remove Background Absorbance
-
-1. **User** specifies the negative control.
-   - **KineticsKalculator** adjusts the reaction rates by subtracting background absorbance.
-
-### Use Case 5: Compute Michaelis-Menten Kinetics
-
-1. **User** completes necessary data preparation.
-2. **User** computes Michaelis-Menten kinetics.
-   - **KineticsKalculator** derives kinetic parameters such as Km and Vmax.
-
-### Use Case 6: Visualize Results of Michaelis-Menten Kinetics
-
-1. **User** requests visualization of kinetic data.
-   - **KineticsKalculator** generates plots to illustrate Michaelis-Menten kinetics.
+See the functional specification fo details step-by-step walkthrough of user interactions to accomplish use cases, and program steps for each.

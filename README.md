@@ -2,6 +2,8 @@
 
 Kinetics Kalculator is a Python package designed for analyzing biochemical kinetics data. It provides tools for loading experimental data, calculating reaction rates, adjusting for background activity, and visualizing results using various plots. This package is particularly useful for experiments involving enzyme kinetics and Michaelis-Menten analysis.
 
+For the `sphinx`-compiled documentation, see [here](http://natecorley.com/kinetics-kalculator/kinetics_kalculator.html#kinetics_kalculator.kinetics_kalculator.KineticsKalculator).
+
 ## Installation
 
 You can install Kinetics Kalculator from PyPI using pip:
@@ -78,8 +80,8 @@ kalculator.plot_michaelis_menten_curve()
 
 ### Output graph examples:
 
-![example concentration vs. time graph](/examples/example_concentration_time_graph.png)
-![example concentration vs. time graph](/examples/example_michaelis_menten_graph.png)
+![example concentration vs. time graph](/assets/example_concentration_time_graph.png)
+![example concentration vs. time graph](/assets/example_michaelis_menten_graph.png)
 
 
 ## Data Dictionary

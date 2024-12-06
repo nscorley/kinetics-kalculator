@@ -26,8 +26,7 @@ class KineticsKalculator:
         data_path: Path | PathLike | pd.DataFrame | None,
         standard_curve_parameters: dict | None = None,
     ):
-        """
-        Initialize the KineticsKalculator by loading the data from the specified file path.
+        """Initialize the KineticsKalculator by loading the data from the specified file path.
 
         Args:
             data_path (Path | PathLike | pd.DataFrame | None): The path to the data file to load or the DataFrame itself. Supported file formats include:
@@ -42,10 +41,9 @@ class KineticsKalculator:
             standard_curve_parameters (dict | None): A dictionary containing the parameters of the standard curve.
                 For example, {"slope": 2, "y_intercept": 1}, if using a linear standard curve of the form y = mx + c.
                 NOTE: Currently only linear standard curves are supported.
-            epsilon (float): A small value to add to the negative control values to avoid division by zero.
 
         Returns:
-            None: The KineticsKalculator object is initialized with the loaded data.
+            None: The KineticsKalculator object is initialized with the loaded data and standard curve parameters.
         """
         if isinstance(data_path, pd.DataFrame):
             self.data = data_path
@@ -60,8 +58,7 @@ class KineticsKalculator:
         self.standard_curve_parameters = standard_curve_parameters
 
     def _load_data(self):
-        """
-        Load data from the file path based on the file extension.
+        """Load data from the file path based on the file extension.
 
         Returns:
             DataFrame: The loaded data.
@@ -88,8 +85,14 @@ class KineticsKalculator:
     def label_replicates_and_conditions(
         self, condition_columns: list[str], well_column: str = "well"
     ):
-        """
-        Label rows in the dataframe that represent the same experimental conditions; e.g., replicates.
+        """Label rows in the dataframe that represent the same experimental conditions; e.g., replicates.
+
+        Args:
+            condition_columns (list[str]): The names of the columns that define the experimental conditions. For example, ["substrate_concentration", "enzyme_concentration"].
+            well_column (str): The name of the column containing the well information. Defaults to 'well'. We will label each well within a condition as a replicate.
+
+        Returns:
+            None: The DataFrame is modified in-place.
         """
         assert (
             well_column in self.data.columns
@@ -119,9 +122,7 @@ class KineticsKalculator:
         negative_control: str = "negative_control",
         poor_fit_threshold: float = 0.5,
     ):
-        """
-        Calculate the rates of change in the 'value' column over time, and add a new column to the DataFrame
-        containing the calculated rates.
+        """Calculate the rates of change in the 'value' column over time, and add a new column to the DataFrame containing the calculated rates.
 
         NOTE: The rates are calculated as the first derivative of the values with respect to time. We assume that
         the "value" column represents the appropriate unit (e.g., concentration).
@@ -200,9 +201,7 @@ class KineticsKalculator:
             console.print(table)
 
     def convert_values_to_concentration_with_standard_curve(self):
-        """
-        Convert the 'value' column in the DataFrame to concentration units using the provided slope and y-intercept
-        of the standard curve.
+        """Convert the 'value' column in the DataFrame to concentration units using the provided slope and y-intercept of the standard curve.
 
         NOTE: Only supports linear standard curves of the form y = mx + c.
 
@@ -220,8 +219,7 @@ class KineticsKalculator:
         )
 
     def subset_dataframe_to_time_range(self, lower_bound: float, upper_bound: float):
-        """
-        Subset the underlying DataFrame to only include rows where the 'time' column is within the specified range.
+        """Subset the underlying DataFrame to only include rows where the 'time' column is within the specified range.
 
         Args:
             lower_bound (float): The lower bound of the time range.
@@ -242,8 +240,8 @@ class KineticsKalculator:
         negative_control: str = "negative_control",
         remove_negative_controls: bool = True,
     ):
-        """
-        Adjust the rates in the DataFrame by subtracting the provided background value.
+        """Adjust the rates in the DataFrame by subtracting the provided background value.
+
         Adds a new column containing the adjusted rates, '{rate_column}_minus_background', to the DataFrame.
 
         Args:
@@ -278,8 +276,7 @@ class KineticsKalculator:
         time_units: str = "s",
         concentration_units: str = "M",
     ):
-        """
-        Plot measured target concentration over time for each experimental condition in the DataFrame.
+        """Plot measured target concentration over time for each experimental condition in the DataFrame.
 
         Args:
             time_column (str): The name of the column containing the time values. Defaults to 'time'.
@@ -323,7 +320,20 @@ class KineticsKalculator:
     def plot_michaelis_menten_curve(
         self, substrate_concentration_column: str = "substrate_concentration"
     ) -> None:
-        """Plot the Michaelis-Menten curve using Seaborn."""
+        """Plot the Michaelis-Menten curve using Seaborn.
+
+        NOTE: Assumes that the column `rate_minus_background` has been added to the DataFrame.
+
+        Args:
+            substrate_concentration_column (str): The name of the column containing the substrate concentration values. Defaults to 'substrate_concentration'.
+
+        Returns:
+            None: Displays the Michaelis-Menten curve plot, with the data points, the fitted curve, and the kinetics parameters.
+        """
+        assert (
+            "rate_minus_background" in self.data.columns
+        ), "Column 'rate_minus_background' not found in the DataFrame."
+
         constants = self.calculate_michaelis_menten_constants()
         Vmax = constants["Vmax"]
         Km = constants["Km"]
