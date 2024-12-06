@@ -8,7 +8,14 @@ readme = "README.md"
 dynamic = ["version"]
 license = {file = "LICENSE"}
 requires-python = ">=3.8"
-dependencies = []
+dependencies = [
+    "matplotlib",
+    "seaborn",
+    "pandas",
+    "numpy",
+    "rich",
+    "scipy"
+]
 urls = { "Homepage" = "https://github.com/nscorley/kinetics-kalculator" }
 
 
@@ -22,10 +29,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 source = "vcs"
-
-[tool.hatch.build.hooks.vcs]
-version-file = "src/kinetics_kalculator/version.py"
-
 
 # Formatting & linting settings -------------------------------------------------------
 [tool.ruff]
